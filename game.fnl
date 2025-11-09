@@ -56,7 +56,9 @@
    :vy 0})
 
 (fn tank-field [t]
-  (+ 30 (* t.power 60)))
+  (if (> t.power 0)
+    (+ 30 (* t.power 60))
+    0))
 
 (fn is-gameover []
   (<= state.mytank.scale 0))
@@ -120,10 +122,11 @@
   (set t.power (math.min power-max (+ t.power dt))))
 
 (fn shoot [t bullets]
-  (when (> t.power power-min)
-    (table.insert bullets (new-bullet t (* t.power 20) (+ mybullet-v (* t.power 3))))
-    (accel-tank t (* t.power -2))
-    (set t.power 0)))
+  (if (> t.power power-min)
+      (do
+        (table.insert bullets (new-bullet t (* t.power 20) (+ mybullet-v (* t.power 3))))
+        (accel-tank t (* t.power -2))))
+  (set t.power 0))
 
 (fn reduce-scale [t d]
   (set t.scale (- t.scale d)))
@@ -246,7 +249,7 @@
     (set state.enemies
       (icollect [_ enemy (ipairs state.enemies)]
         (when (> enemy.scale 0)
-         enemy)))
+          enemy)))
     (set state.items
       (icollect [_ item (ipairs state.items)]
         (when (> item.scale 0)
@@ -254,10 +257,11 @@
     (set state.keys false)))
 
 (fn draw-tank [t]
-  (love.graphics.setColor 1 1 1)
-  (love.graphics.circle "fill" t.x t.y t.scale) 
-  (when (> t.power 0)
-    (love.graphics.circle "line" t.x t.y (tank-field t))) 
+  (when (> t.scale 0)
+    (love.graphics.setColor 1 1 1)
+    (love.graphics.circle "fill" t.x t.y t.scale) 
+    (when (> t.power 0)
+        (love.graphics.circle "line" t.x t.y (tank-field t)))) 
   (love.graphics.line
     t.x
     t.y
