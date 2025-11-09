@@ -1,21 +1,16 @@
--- bootstrap the compiler
+-- bootstrap the compiler (https://fennel-lang.org/setup#embedding-fennel)
+_G.fennel = require("lib.fennel")
+table.insert(package.loaders, fennel.make_searcher({
+	correlate=true -- try to match line numbers for stack trace
+}))
 
-local fennel = require("lib.fennel").install({correlate=true,
-                                              moduleName="lib.fennel"})
-
-local make_love_searcher = function(env)
-   return function(module_name)
-      local path = module_name:gsub("%.", "/") .. ".fnl"
-      if love.filesystem.getInfo(path) then
-         return function(...)
-            local code = love.filesystem.read(path)
-            return fennel.eval(code, {env=env}, ...)
-         end, path
-      end
-   end
+-- simple pretty print function
+_G.pp = function(x)
+	print(fennel.view(x))
 end
 
-table.insert(package.loaders, make_love_searcher(_G))
-table.insert(fennel["macro-searchers"], make_love_searcher("_COMPILER"))
+-- here would be a good place to load more potent standard library
+-- _G.lume = require("lib.lume")
 
-require("wrap")
+require("game")
+
