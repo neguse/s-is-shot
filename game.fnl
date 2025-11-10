@@ -31,6 +31,8 @@
 (global max-score 0)
 (global state (init-state))
 
+(global font (love.graphics.newFont 90))
+
 (fn new-bullet [t s v]
   {:x t.x
    :y t.y
@@ -289,19 +291,20 @@
   (love.graphics.clear 0.2 0.2 0.2))
 
 (fn love.draw []
+  (love.graphics.setFont font)
   (draw-background)
   (love.graphics.setColor 1 1 1)
-  (love.graphics.print (.. "score:" state.score) 0 0 0 5 5)
-  (love.graphics.print (.. "maxscore:" max-score) 0 50 0 5 5)
+  (love.graphics.print (.. "score:" state.score) 0 0 0 0.7 0.7)
+  (love.graphics.print (.. "maxscore:" max-score) 0 70 0 0.7 0.7)
   (when (not state.started)
-    (love.graphics.print "S is shot" (* window-width 0.3) (* window-height 0.3) 0 10 10)
-    (love.graphics.print "A/D is rotate" (* window-width 0.3) (* window-height 0.6) 0 7 7)
-    (love.graphics.print "RED is enemy" (* window-width 0.3) (* window-height 0.7) 0 7 7)
-    (love.graphics.print "YELLOW is score" (* window-width 0.3) (* window-height 0.8) 0 7 7)
-    (love.graphics.print "neguse 2025" (* window-width 0.3) (* window-height 0.95) 0 2 2))
+    (love.graphics.print "S is shot" (* window-width 0.3) (* window-height 0.3) 0 1 1)
+    (love.graphics.print "A/D is rotate" (* window-width 0.3) (* window-height 0.6) 0 1 1)
+    (love.graphics.print "RED is enemy" (* window-width 0.3) (* window-height 0.7) 0 1 1)
+    (love.graphics.print "YELLOW is score" (* window-width 0.3) (* window-height 0.8) 0 1 1)
+    (love.graphics.print "neguse 2025" (* window-width 0.3) (* window-height 0.95) 0 0.5 0.5))
   (when (is-gameover)
-    (love.graphics.print "GAMEOVER" (* window-width 0.3) (* window-height 0.3) 0 10 10)
-    (love.graphics.print "A+D to restart" (* window-width 0.3) (* window-height 0.6) 0 10 10))
+    (love.graphics.print "GAMEOVER" (* window-width 0.3) (* window-height 0.3) 0 1 1)
+    (love.graphics.print "A+D to restart" (* window-width 0.3) (* window-height 0.6) 0 1 1))
   (draw-tank state.mytank)
   (each [_ bullet (ipairs state.mybullets)]
     (draw-bullet bullet))
