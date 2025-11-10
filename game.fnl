@@ -18,7 +18,8 @@
   {:boom (love.audio.newSource "boom.wav" "static")
    :hit (love.audio.newSource "hit.wav" "static")
    :pickup (love.audio.newSource "pickup.wav" "static")
-   :shoot (love.audio.newSource "shoot.wav" "static")})
+   :shoot (love.audio.newSource "shoot.wav" "static")
+   :charge (love.audio.newSource "charge.wav" "static")})
 
 (fn init-mytank []
   {:x 600 :y 600 :scale 30 :rot 0 :vx 0 :vy 0 :power 0})
@@ -132,7 +133,11 @@
       (love.audio.play state.audio.hit))))
 
 (fn inc-power [t dt]
-  (set t.power (math.min power-max (+ t.power dt))))
+  (set t.power (math.min power-max (+ t.power dt)))
+  (state.audio.charge:setLooping true)
+  (state.audio.charge:setVolume 0.7)
+  (state.audio.charge:setPitch (* t.power 0.4))
+  (love.audio.play state.audio.charge))
 
 (fn shoot [t bullets]
   (if (> t.power power-min)
@@ -140,7 +145,8 @@
         (table.insert bullets (new-bullet t (* t.power 20) (+ mybullet-v (* t.power 3))))
         (accel-tank t (* t.power -2))
         (love.audio.play state.audio.shoot)))
-  (set t.power 0))
+  (set t.power 0)
+  (love.audio.pause state.audio.charge))
 
 (fn reduce-scale [t d]
   (set t.scale (- t.scale d)))
