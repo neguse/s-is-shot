@@ -14,6 +14,12 @@
 (var items-max 5)
 (var enemy-line 15)
 
+(fn load-audio []
+  {:boom (love.audio.newSource "boom.wav" "static")
+   :hit (love.audio.newSource "hit.wav" "static")
+   :pickup (love.audio.newSource "pickup.wav" "static")
+   :shoot (love.audio.newSource "shoot.wav" "static")})
+
 (fn init-mytank []
   {:x 600 :y 600 :scale 30 :rot 0 :vx 0 :vy 0 :power 0})
 
@@ -26,7 +32,8 @@
    :score 0
    :item-spawn-at item-spawn-interval
    :enemy-spawn-at enemy-spawn-interval
-   :started false})
+   :started false
+   :audio (load-audio)})
 
 (global max-score 0)
 (global state (init-state))
@@ -109,16 +116,20 @@
         wb (- window-height t.scale)]
     (when (< t.x wl)
       (set t.x wl)
-      (set t.vx (math.abs (* t.vx tank-bounce -1))))
+      (set t.vx (math.abs (* t.vx tank-bounce -1)))
+      (love.audio.play state.audio.hit))
     (when (> t.x wr)
       (set t.x wr)
-      (set t.vx (- (math.abs (* t.vx tank-bounce -1)))))
+      (set t.vx (- (math.abs (* t.vx tank-bounce -1))))
+      (love.audio.play state.audio.hit))
     (when (< t.y wt)
       (set t.y wt)
-      (set t.vy (math.abs (* t.vy tank-bounce -1))))
+      (set t.vy (math.abs (* t.vy tank-bounce -1)))
+      (love.audio.play state.audio.hit))
     (when (> t.y wb)
       (set t.y wb)
-      (set t.vy (- (math.abs (* t.vy tank-bounce -1)))))))
+      (set t.vy (- (math.abs (* t.vy tank-bounce -1))))
+      (love.audio.play state.audio.hit))))
 
 (fn inc-power [t dt]
   (set t.power (math.min power-max (+ t.power dt))))
@@ -127,7 +138,8 @@
   (if (> t.power power-min)
       (do
         (table.insert bullets (new-bullet t (* t.power 20) (+ mybullet-v (* t.power 3))))
-        (accel-tank t (* t.power -2))))
+        (accel-tank t (* t.power -2))
+        (love.audio.play state.audio.shoot)))
   (set t.power 0))
 
 (fn reduce-scale [t d]
@@ -234,7 +246,8 @@
       (enemy-direction enemy state.mytank dt)
       (wall-collision-tank enemy)
       (when (collide enemy state.mytank)
-        (damage state.mytank enemy))
+        (damage state.mytank enemy)
+        (love.audio.play state.audio.boom))
       (each [_ bullet (ipairs state.mybullets)]
         (when (collide bullet enemy)
            (damage bullet enemy))))
@@ -243,7 +256,8 @@
         (item-move item state.mytank dt))
       (when (and (collide item state.mytank) (not (is-gameover)))
         (set-score (+ state.score item.scale (+ 1 (length state.enemies))))
-        (set item.scale 0)))
+        (set item.scale 0)
+        (love.audio.play state.audio.pickup)))
     (set state.mybullets
       (icollect [_ bullet (ipairs state.mybullets)]
         (when (> bullet.scale 0)

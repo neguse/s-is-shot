@@ -7,6 +7,13 @@ A game made for Autumn Lisp Game Jam 2025
 - Install [LOVE](https://love2d.org/)
 - run `love .`
 
+# Tools
+
+- LOVE2d
+- Fennel
+- Bfxr
+- Neovim
+
 # License
 
 MIT
