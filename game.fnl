@@ -221,6 +221,7 @@
     (when (isDown "a")
       (rotate-tank state.mytank (* mytank-rot-d dt -1)))
     (when (and (is-gameover) (isDown "a") (isDown "d") (not (isDown "s")))
+      (love.audio.pause)
       (set state (init-state)))
     (when (not (is-gameover))
       (if (isDown "s")
